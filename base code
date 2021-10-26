@@ -1,0 +1,2187 @@
+Private Sub billing_dnvgl_Change()
+     If opportunity_number.Value = "" Then
+            contract_number_view_label.Visible = False
+            document_number_view_label.Visible = False
+            document_number.Visible = False
+            contract_number.Visible = False
+        Else
+            contract_number_view_label.Visible = True
+            document_number_view_label.Visible = True
+            document_number.Visible = True
+            contract_number.Visible = True
+     End If
+    With Me
+            .document_number.Text = "" & opportunity_number & "-" & Sheet4.Cells(.billing_dnvgl.ListIndex + 2, 6) & "-1 Rev." & revision_number & ""
+            .contract_number.Text = "" & opportunity_number & "-" & Sheet4.Cells(.billing_dnvgl.ListIndex + 2, 6) & "-2 Rev." & revision_number & ""
+    End With
+End Sub
+Private Sub issue_sfa_only_Click()
+    Call issue_sfa_og
+End Sub
+Private Sub contract_number_view_Change()
+End Sub
+Private Sub CommandButton2_Click()
+End Sub
+Private Sub contact_person_Change()
+End Sub
+Private Sub customer_billing_address_Change()
+End Sub
+Private Sub customer_city_Change()
+
+End Sub
+Private Sub customer_city_label_Click()
+
+End Sub
+Private Sub customer_state_label_Click()
+
+End Sub
+Private Sub Frame1_Click()
+
+End Sub
+
+Private Sub iss_applicability_Click()
+
+End Sub
+Private Sub Label812_Click()
+
+End Sub
+Private Sub Label813_Click()
+
+End Sub
+Private Sub save_customer_data_Click()
+    Application.ScreenUpdating = False
+    Workbooks.Open ("C:\Users\FABRICIO\OneDrive\B.R.A.I.N\Work\DNV\e-Proposal\e-Proposal database\database.xlsm")
+    Windows("database.xlsm").Activate
+    Sheets("Sheet1").Select
+        If Not IsError(Application.Match(PROPOSAL_554.customer_reference.Text, Sheets("Sheet1").Range("B:B"), 0)) Then
+            MSG1 = MsgBox("This customer already exists. Do you want to overwrite it's data?", vbYesNo, "Yaddda?")
+            If MSG1 = vbYes Then
+                MsgBox "Customer data successfully overwrited."
+            Else
+                'Workbooks("database.xlsm").Close
+                MsgBox "Customer data not overwrited."
+            End If
+        Else
+            MsgBox "Customer id doesnt exist"
+        End If
+    Workbooks("database.xlsm").Close SaveChanges:=True
+    Application.ScreenUpdating = True
+    
+'        If Not IsError(Application.Match(PROPOSAL_554.customer_reference.Text, Sheets("Customer Data").Range("B:B"), 0)) Then
+'            MSG2 = MsgBox("This customer already exists. Do you want to overwrite it's data?", vbYesNo, "Title")
+'            If MSG2 = vbYes Then
+'                Call save_customer_subroutine
+'                MsgBox "Customer data successfully overwrited."
+'            Else
+'                MsgBox "Customer data not overwrited."
+'            End If
+'        Else
+'            Call customer_data_acquisition_output
+'            MsgBox "Customer data has been successfully saved."
+'        End If
+End Sub
+Sub save_customer_subroutine()
+    Application.WorksheetFunction.Index(Sheets("Customer Data").Range("A:G"), Application.WorksheetFunction.Match(PROPOSAL_554.customer_reference.Text, Sheets("Customer Data").Range("B:B"), 0), 1) = customer_name.Value
+    Application.WorksheetFunction.Index(Sheets("Customer Data").Range("A:G"), Application.WorksheetFunction.Match(PROPOSAL_554.customer_reference.Text, Sheets("Customer Data").Range("B:B"), 0), 3) = vat_tax_number.Value
+    Application.WorksheetFunction.Index(Sheets("Customer Data").Range("A:G"), Application.WorksheetFunction.Match(PROPOSAL_554.customer_reference.Text, Sheets("Customer Data").Range("B:B"), 0), 4) = customer_billing_address.Value
+    Application.WorksheetFunction.Index(Sheets("Customer Data").Range("A:G"), Application.WorksheetFunction.Match(PROPOSAL_554.customer_reference.Text, Sheets("Customer Data").Range("B:B"), 0), 5) = customer_commercial_address.Value
+    Application.WorksheetFunction.Index(Sheets("Customer Data").Range("A:G"), Application.WorksheetFunction.Match(PROPOSAL_554.customer_reference.Text, Sheets("Customer Data").Range("B:B"), 0), 6) = oCtrl.Caption
+    Application.WorksheetFunction.Index(Sheets("Customer Data").Range("A:G"), Application.WorksheetFunction.Match(PROPOSAL_554.customer_reference.Text, Sheets("Customer Data").Range("B:B"), 0), 7) = contact_person.Value
+End Sub
+Sub customer_data_acquisition_output()
+Dim irowb As Long
+Dim wsb As Worksheet
+Windows("database.xlsm").Activate
+Set wsb = Workbooks("database.xlsm").Sheets(3)
+'find first row in database
+    irowb = wsb.Cells(Rows.Count, 1).End(xlUp).Offset(1, 0).Row
+        With wsb
+            .Range("A" & irowb) = customer_name.Value
+            .Range("B" & irowb) = customer_reference.Value
+            .Range("C" & irowb) = vat_tax_number.Value
+            .Range("D" & irowb) = customer_billing_address.Value
+            .Range("E" & irowb) = customer_commercial_address.Value
+            .Range("F" & irowb) = customer_city.Value
+            .Range("G" & irowb) = customer_state.Value
+        End With
+End Sub
+Private Sub save_proposal_data_Click()
+    Application.ScreenUpdating = False
+    Workbooks.Open ("P:\oasbr554\e-Proposal\e-Proposal database\database.xlsm")
+    Windows("database.xlsm").Activate
+    Sheets("Issued Proposals").Select
+        If Not IsError(Application.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0)) Then
+            MSG1 = MsgBox("This opportunity already exists. Do you want to overwrite it's data?", vbYesNo, "Yadda?")
+            If MSG1 = vbYes Then
+                Call save_subroutine
+                MsgBox "Opportunity data successfully overwrited."
+            Else
+                Workbooks("database.xlsm").Close
+                MsgBox "Opportunity data not overwrited."
+            End If
+        Else
+            Call save_subroutine
+            MsgBox "Proposal data has been successfully saved."
+        End If
+    Application.ScreenUpdating = True
+End Sub
+Sub save_subroutine()
+    If Not IsError(Application.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0)) Then
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 1) = proposal_title.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 3) = revision_number.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 4) = issue_date.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 5) = rev_date.Value
+    Dim oCtrl As Control
+        '***** Try only controls in Frame3
+        For Each oCtrl In PROPOSAL_554.Controls
+            '***** Try only option buttons
+            If TypeName(oCtrl) = "OptionButton" Then
+                '***** Which one is checked?
+                If oCtrl.Value = True Then
+                    '***** What's the caption?
+                Else
+                    Exit For
+                End If
+            End If
+        Next
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 6) = oCtrl.Caption
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 7) = contact_person.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 8) = direct_phone.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 9) = customer_email.Text
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 10) = customer_name.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 11) = vat_tax_number.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 12) = customer_reference.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 13) = customer_commercial_address.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 14) = customer_billing_address.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 15) = author_name.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 16) = author_position.Text
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 17) = billing_dnvgl.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 18) = request_date.Value
+    Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 19) = proposal_price.Value
+        If iss_applicability.Value = True Then
+            Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 20) = "With ISS"
+        Else
+            Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 20) = "Without ISS"
+        End If
+    Workbooks("database.xlsm").Close SaveChanges:=True
+    Else
+        Call data_acquisition_output
+    End If
+End Sub
+Sub data_acquisition_output()
+Workbooks.Open ("P:\oasbr554\e-Proposal\e-Proposal database\database.xlsm")
+Dim irow As Long
+Dim ws As Worksheet
+    Set ws = Workbooks("database.xlsm").Sheets(1)
+    'find first row in database
+    irow = ws.Cells(Rows.Count, 1).End(xlUp).Offset(1, 0).Row
+    With ws
+    .Range("A" & irow) = proposal_title.Value
+    .Range("B" & irow) = opportunity_number.Value
+    .Range("C" & irow) = revision_number.Value
+    .Range("D" & irow) = issue_date.Value
+    .Range("E" & irow) = rev_date.Value
+    Dim oCtrl As Control
+       '***** Try only controls in Frame3
+       For Each oCtrl In PROPOSAL_554.Controls
+           '***** Try only option buttons
+           If TypeName(oCtrl) = "OptionButton" Then
+               '***** Which one is checked?
+               If oCtrl.Value = True Then
+                   '***** What's the caption?
+                   Exit For
+               End If
+           End If
+       Next
+    If IsError(.Range("F" & irow) = oCtrl.Caption) Then
+        MsgBox "Choose a proposal type first."
+    Stop
+    Else
+    .Range("F" & irow) = oCtrl.Caption
+    .Range("G" & irow) = contact_person.Value
+    .Range("H" & irow) = direct_phone.Value
+    .Range("I" & irow) = customer_email.Value
+    .Range("J" & irow) = customer_name.Value
+    .Range("K" & irow) = vat_tax_number.Value
+    .Range("L" & irow) = customer_reference.Value
+    .Range("M" & irow) = customer_commercial_address.Value
+    .Range("N" & irow) = customer_billing_address.Value
+    .Range("O" & irow) = Sheet2.Cells(Me.author_name.ListIndex + 2, 1)
+    .Range("P" & irow) = author_position.Value
+    .Range("Q" & irow) = billing_dnvgl.Value
+    .Range("R" & irow) = request_date.Value
+    .Range("S" & irow) = proposal_price.Value
+        If iss_applicability.Value = True Then
+            .Range("T" & irow) = "With ISS"
+        Else
+            .Range("T" & irow) = "Without ISS"
+        End If
+    End If
+    End With
+Workbooks("database.xlsm").Close SaveChanges:=True
+End Sub
+Private Sub open_old_standard_scope_click()
+   Call retrieve_data_from_database
+End Sub
+Sub retrieve_data_from_database()
+    Application.ScreenUpdating = False
+    Workbooks.Open ("P:\oasbr554\e-Proposal\e-Proposal database\database.xlsm")
+    Windows("database.xlsm").Activate
+    Sheets("Issued Proposals").Select
+    If Not IsError(Application.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0)) Then
+        proposal_title.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 1)
+        revision_number.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 3)
+        issue_date = Format(Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 4), "DD/MM/YYYY")
+        rev_date = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 5)
+        proposal_price.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 19)
+        contact_person.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 7)
+        direct_phone.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 8)
+        customer_email.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 9)
+        customer_name.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 10)
+        vat_tax_number.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 11)
+        customer_reference.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 12)
+        customer_commercial_address.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 13)
+        customer_billing_address.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 14)
+        author_name.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 15)
+        author_position.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 16)
+        billing_dnvgl.Text = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 17)
+        request_date = Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 18)
+            If Application.WorksheetFunction.Index(Sheets("Issued Proposals").Range("A:T"), Application.WorksheetFunction.Match(PROPOSAL_554.opportunity_number.Text, Sheets("Issued Proposals").Range("B:B"), 0), 20) = "With ISS" Then
+                iss_applicability.Value = True
+            Else
+                iss_applicability.Value = False
+            End If
+        MsgBox "" & PROPOSAL_554.opportunity_number & " has been successfully loaded."
+    Else
+        MsgBox "The Opportunity number " & PROPOSAL_554.opportunity_number & " typed does not exist."
+    End If
+    Workbooks("database.xlsm").Close
+    Sheets("Sheet1").Select
+    Application.ScreenUpdating = True
+End Sub
+Private Sub CommandButton10_Click()
+
+End Sub
+Private Sub dnvgl_section_scopes_Change()
+    If Me.dnvgl_section_scopes.Value = 1 Then
+        open_LCC_logistic_and_schedule_form.Visible = True
+    Else
+        open_LCC_logistic_and_schedule_form.Visible = False
+    End If
+End Sub
+Private Sub open_LCC_logistic_and_schedule_form_Click()
+    If Me.option_materials.Value = True Then
+        LCC_logistic_and_schedule.in_loco_evaluation.ForeColor = &H80000005
+        LCC_logistic_and_schedule.in_loco_evaluation_days.Enabled = False
+        LCC_logistic_and_schedule.local_content_booklet_fill.ForeColor = &H80000005
+        LCC_logistic_and_schedule.local_content_booklet_fill_days.Enabled = False
+        LCC_logistic_and_schedule.Label3.ForeColor = &H80000005
+        LCC_logistic_and_schedule.Label4.ForeColor = &H80000005
+        LCC_logistic_and_schedule.Show
+    Else
+        LCC_logistic_and_schedule.in_loco_evaluation.ForeColor = &H80000012
+        LCC_logistic_and_schedule.in_loco_evaluation_days.Enabled = True
+        LCC_logistic_and_schedule.Label3.ForeColor = &H80000012
+        LCC_logistic_and_schedule.local_content_booklet_fill.ForeColor = &H80000012
+        LCC_logistic_and_schedule.local_content_booklet_fill_days.Enabled = True
+        LCC_logistic_and_schedule.Label4.ForeColor = &H80000012
+        LCC_logistic_and_schedule.Show
+    End If
+End Sub
+Private Sub opportunity_number_Change()
+    opportunity_number = UCase(opportunity_number)
+        If opportunity_number.Value = "" Then
+            contract_number_view_label.Visible = False
+            document_number_view_label.Visible = False
+            document_number.Visible = False
+            contract_number.Visible = False
+        Else
+            contract_number_view_label.Visible = True
+            document_number_view_label.Visible = True
+            document_number.Visible = True
+            contract_number.Visible = True
+        End If
+        With Me
+            .document_number.Text = "" & opportunity_number & "-" & Sheet4.Cells(.billing_dnvgl.ListIndex + 2, 6) & "-1 Rev." & revision_number & ""
+            .contract_number.Text = "" & opportunity_number & "-" & Sheet4.Cells(.billing_dnvgl.ListIndex + 2, 6) & "-2 Rev." & revision_number & ""
+        End With
+End Sub
+Private Sub proposal_price_Exit(ByVal Cancel As MSForms.ReturnBoolean)
+    proposal_price = Format(proposal_price, "R$ #,##0.00")
+End Sub
+Private Sub retrieve_data_from_word_standard_scope_Change()
+
+End Sub
+Private Sub revision_number_Change()
+    If Not IsNumeric(revision_number.Value) Then
+        revision_number.Text = ""
+        Cancel = True
+    Else
+        With Me
+                .document_number.Text = "" & opportunity_number & "-" & Sheet4.Cells(.billing_dnvgl.ListIndex + 2, 6) & "-1 Rev." & revision_number & ""
+                .contract_number.Text = "" & opportunity_number & "-" & Sheet4.Cells(.billing_dnvgl.ListIndex + 2, 6) & "-2 Rev." & revision_number & ""
+        End With
+    End If
+End Sub
+
+Private Sub search_costumers_Click()
+    select_customer.Show
+End Sub
+Private Sub author_name_Change()
+    With Me
+        .author_position.Text = Sheet2.Cells(.author_name.ListIndex + 2, 3)
+    End With
+End Sub
+Private Sub customer_reference_layer_Change()
+    With Me
+        .customer_reference.Text = customer_reference_layer
+    End With
+End Sub
+Private Sub customer_selection_Change()
+    With Me
+    .customer_name.Text = Sheet3.Cells(.customer_selection.ListIndex + 2, 1)
+    .vat_tax_number.Text = Sheet3.Cells(.customer_selection.ListIndex + 2, 2)
+    .customer_reference.Text = Sheet3.Cells(.customer_selection.ListIndex + 2, 7)
+    .customer_commercial_address.Text = Sheet3.Cells(.customer_selection.ListIndex + 2, 4)
+    .customer_billing_address.Text = Sheet3.Cells(.customer_selection.ListIndex + 2, 3)
+    End With
+End Sub
+Private Sub exit_button_Click()
+'Excel Closes and does not save changes
+    Application.Visible = True
+    Application.DisplayAlerts = False
+    ThisWorkbook.Close
+    Application.DisplayAlerts = True
+End Sub
+Private Sub reset_button_Click()
+'Reset Form
+    Unload PROPOSAL_554
+    Unload LCC_logistic_and_schedule
+    PROPOSAL_554.Show
+End Sub
+Private Sub exit_to_excel_button_Click()
+Dim password As Variant
+password = Application.InputBox("Enter Password", "Password Protected")
+Select Case password
+    Case Is = False
+        'do nothing
+    Case Is = ""
+        Range("A1").Value = "This is secret code"
+        Unload Me
+        Application.Visible = True
+    Case Else
+        MsgBox "Incorrect Password"
+End Select
+End Sub
+Private Sub open_issue_date_calendar_Click()
+issue_date = GetCalendário
+End Sub
+Private Sub open_request_date_calendar_Click()
+request_date = GetCalendário
+End Sub
+Private Sub open_rev_date_calendar_Click()
+rev_date = GetCalendário
+End Sub
+Private Sub new_customer_Click()
+End Sub
+Private Sub new_customer_checkbox_Click()
+    If new_customer_checkbox.Value = True Then
+        customer_name.Enabled = True
+        customer_name.BackColor = &H80000005
+        vat_tax_number.Enabled = True
+        vat_tax_number.BackColor = &H80000005
+        customer_reference.Enabled = True
+        customer_reference.BackColor = &H80000005
+        customer_commercial_address.Enabled = True
+        customer_commercial_address.BackColor = &H80000005
+        customer_billing_address.Enabled = True
+        customer_billing_address.BackColor = &H80000005
+        customer_city_label.Visible = True
+        customer_state_label.Visible = True
+        customer_city.Enabled = True
+        customer_state.Enabled = True
+    Else
+        customer_name.Enabled = False
+        customer_name.BackColor = &H8000000F
+        vat_tax_number.Enabled = False
+        vat_tax_number.BackColor = &H8000000F
+        customer_reference.Enabled = False
+        customer_reference.BackColor = &H8000000F
+        customer_commercial_address.Enabled = False
+        customer_commercial_address.BackColor = &H8000000F
+        customer_billing_address.Enabled = False
+        customer_billing_address.BackColor = &H8000000F
+'        customer_city_label.Visible = False
+'        customer_state_label.Visible = False
+        customer_city.Enabled = False
+        customer_state.Enabled = False
+    End If
+End Sub
+
+'Private Sub UserForm_Initialize()
+ '   issue_date = Format(Now, "DD/MM/YYYY")
+  '  rev_date = Format(Now, "DD/MM/YYYY")
+   ' request_date = Format(Now, "DD/MM/YYYY")
+    'user_name = Environ$("UserName")
+'    author_name = Application.UserName
+ '   contract_number_view_label.Visible = False
+  '  document_number_view_label.Visible = False
+   ' customer_city_label.Visible = False
+    'customer_state_label.Visible = False
+    
+'    customer_name.Enabled = False
+ '   customer_name.BackColor = &H8000000F
+  '  vat_tax_number.Enabled = False
+   ' vat_tax_number.BackColor = &H8000000F
+    'customer_reference.Enabled = False
+'    customer_reference.BackColor = &H8000000F
+ '   customer_commercial_address.Enabled = False
+  '  customer_commercial_address.BackColor = &H8000000F
+   ' customer_billing_address.Enabled = False
+    'customer_billing_address.BackColor = &H8000000F
+'    customer_city.Enabled = False
+ '   customer_state.Enabled = False
+  '  iss_applicability.Value = False
+'End Sub
+
+Private Sub issue_proposal_Click()
+        If option_wps.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_wps
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_wps
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_wqtc.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_wqtc
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_wqtc
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_wps_wqtc.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_wps_wqtc
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_wps_wqtc
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+                    
+        If option_product_certification.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_product_certification
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_product_certification
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_inspection.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_inspection
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_inspection
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_test.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_test
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_test
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_inspection_test.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_inspection_test
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_inspection_test
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_technical.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_technical_verification_statement
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_technical_verification_statement
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_commercial.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_commercial_verification_statement
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_commercial_verification_statement
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_technical_commercial.Value = True Then
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                Call issue_proposal_technical_commercial_verification_statement
+                MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = True Then
+                    Call issue_proposal_technical_commercial_verification_statement
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = False And sfa_check_box = True Then
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        MsgBox "Choose the Word document type you want first."
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_goods.Value = True Then
+            If LCC_logistic_and_schedule.documentation_verification_days.Text = "" Or LCC_logistic_and_schedule.in_loco_evaluation_days.Text = "" Or LCC_logistic_and_schedule.local_content_booklet_fill_days.Text = "" Or LCC_logistic_and_schedule.local_content_certificate_emission_days.Text = "" Then
+                MsgBox "LCC - Logistic and Schedule information missing."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = False Then
+                    Call issue_proposal_goods
+                    MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = True And sfa_check_box = True Then
+                        Call issue_proposal_goods
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        If proposal_check_box.Value = False And sfa_check_box = True Then
+                            Call issue_sfa_og
+                            MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                        Else
+                            MsgBox "Choose the Word document type you want first."
+                        End If
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_materials.Value = True Then
+            If LCC_logistic_and_schedule.documentation_verification_days.Text = "" Or LCC_logistic_and_schedule.local_content_certificate_emission_days.Text = "" Then
+                MsgBox "LCC - Logistic and Schedule information missing."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = False Then
+                    Call issue_proposal_materials
+                    MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = True And sfa_check_box = True Then
+                        Call issue_proposal_materials
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        If proposal_check_box.Value = False And sfa_check_box = True Then
+                            Call issue_sfa_og
+                            MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                        Else
+                            MsgBox "Choose the Word document type you want first."
+                        End If
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_set.Value = True Then
+            If LCC_logistic_and_schedule.documentation_verification_days.Text = "" Or LCC_logistic_and_schedule.in_loco_evaluation_days.Text = "" Or LCC_logistic_and_schedule.local_content_booklet_fill_days.Text = "" Or LCC_logistic_and_schedule.local_content_certificate_emission_days.Text = "" Then
+                MsgBox "LCC - Logistic and Schedule information missing."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = False Then
+                    Call issue_proposal_set
+                    MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = True And sfa_check_box = True Then
+                        Call issue_proposal_set
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        If proposal_check_box.Value = False And sfa_check_box = True Then
+                            Call issue_sfa_og
+                            MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                        Else
+                            MsgBox "Choose the Word document type you want first."
+                        End If
+                    End If
+                End If
+            End If
+        Else
+        
+        If option_mdo_service = True Then
+            If LCC_logistic_and_schedule.documentation_verification_days.Text = "" Or LCC_logistic_and_schedule.in_loco_evaluation_days.Text = "" Or LCC_logistic_and_schedule.local_content_booklet_fill_days.Text = "" Or LCC_logistic_and_schedule.local_content_certificate_emission_days.Text = "" Then
+                MsgBox "LCC - Logistic and Schedule information missing."
+            Else
+                If proposal_check_box.Value = True And sfa_check_box = False Then
+                    Call issue_proposal_mdo_service
+                    MsgBox "Done! Your Proposal has been saved as ""ISSUED PROPOSAL"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = True And sfa_check_box = True Then
+                        Call issue_proposal_mdo_service
+                        Call issue_sfa_og
+                        MsgBox "Done! Your Proposal and Short Form Agreement has been respectively saved as ""ISSUED PROPOSAL"" and ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                    Else
+                        If proposal_check_box.Value = False And sfa_check_box = True Then
+                            Call issue_sfa_og
+                            MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                        Else
+                            MsgBox "Choose the Word document type you want first."
+                        End If
+                    End If
+                End If
+            End If
+        Else
+            If proposal_check_box.Value = True And sfa_check_box = False Then
+                MsgBox "Choose the proposal type you want first."
+            Else
+                If proposal_check_box.Value = False And sfa_check_box = True Then
+                    Call issue_sfa_og
+                    MsgBox "Done! Your Short Form Agreement has been successfully saved as ""ISSUED SFA"" at ""Issued Proposal and SFA"" folder."
+                Else
+                    If proposal_check_box.Value = True And sfa_check_box = True Then
+                        MsgBox "Choose the proposal type you want first."
+                    Else
+                        MsgBox "I don't understand :/"
+                    End If
+                   End If
+               End If
+              End If
+             End If
+            End If
+           End If
+          End If
+         End If
+        End If
+       End If
+      End If
+     End If
+    End If
+   End If
+  End If
+ End If
+End Sub
+Private Sub issue_sfa_og()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    sfatype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\SHORT FORM AGREEMENT\AGR 205-BRA - VERIFICATION - Port - SEM ISS.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+    Set wDoc = wApp.Documents.Open(sfatype)
+    With wDoc
+    'Customer Legal Information
+        .FormFields("DgDNVDocNo01").Result = contract_number
+        .FormFields("DgCustLegalEntity01").Result = customer_name
+        .FormFields("DgCustLegalEntVat01").Result = vat_tax_number
+        .FormFields("DgCustLegalCliIdNo").Result = customer_reference
+        .FormFields("DgContactPerson01").Result = contact_person
+        .FormFields("DgCustLegalCliPhNo").Result = direct_phone
+        .FormFields("DgCustLegalCliEmail").Result = customer_email
+        .FormFields("DgCustomerAddress01").Result = customer_commercial_address
+        .FormFields("DgCustBillingPost01").Result = customer_billing_address
+    'DNVGL Legal Information
+        .FormFields("DgDNVLegalEntity01").Result = "DNV GL Classificação, Certificação e Consultoria Brasil Ltda."
+        .FormFields("DgDNVLegalEntityVatN").Result = Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 2)
+        .FormFields("DgDNVLegalEntOrderNo").Result = Me.document_number
+        .FormFields("DpDNVContactPerson01").Result = "Márcio Monteiro"
+        .FormFields("DpDNVLegalEntPhNo").Result = Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 4)
+        .FormFields("DpDNVLegalEntFaxNo").Result = " "
+        .FormFields("DpDNVLegalEntEmail").Result = "Marcio.monteiro@dnvgl.com"
+        .FormFields("DgDnvOfficePost01").Result = Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 3)
+        .FormFields("DgDnvLegalSecDep").Result = Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 5)
+    'Project Information
+        .FormFields("DpProjName01").Result = proposal_title
+        .FormFields("DpProjWorkLoc01").Result = "TBD"
+        .FormFields("DpProjNo").Result = "TBD"
+    'Others
+        .FormFields("DpProjScope").Result = "Conforme proposta padrão " & Me.document_number & ""
+        .FormFields("DgRemunInvCosExp").Result = "Conforme proposta padrão " & Me.document_number & ""
+        If Me.dnvgl_section_scopes.Value = 1 Then
+            .FormFields("DgDelivOther01").Result = "Certificação de Conteúdo Local"
+        Else
+        End If
+     '--[####
+     'DO NOT CHANGE IT - Special Conditions
+        If iss_applicability.Value = True Then
+            .FormFields("DpLegalSpCond01").Result = "A alteração do item abaixo prevalecerá sobre o item de mesma numeração descrito na ""Seção II - Termos e Condições Gerais"" a seguir. As demais cláusulas presentes nos Termos e Condições Gerais não mencionadas abaixo permanecem válidas e inalteradas."
+            .FormFields("DpLegalSpCond02").Result = "8.1 Cada parte é unicamente responsável por pagar todos e quaisquer tributos a qualquer autoridade pública sempre que esses tributos incidirem sobre as atividades dessa parte. "
+            .FormFields("DpLegalSpCond03").Result = "Para os fins deste Contrato, todos e quaisquer preços, taxas, tarifas ou remuneração são acordados conforme apresentados, excluindo qualquer forma de tributo sobre vendas, "
+            .FormFields("DpLegalSpCond04").Result = "tributo sobre valor agregado e/ou quaisquer outros tributos semelhantes que possam ser aplicáveis, exceto ISS (imposto sobre serviços), que está incluído."
+        Else
+        End If
+      '####]--
+    'Signing Information
+        .FormFields("CertIssuePlace000").Result = "Rio de Janeiro"
+        .FormFields("CertIssueDate000").Result = Format(Now, "YYYY/MM/DD")
+        .FormFields("DgSignName01").Result = "Márcio Monteiro"
+        .FormFields("DgSignTitle01").Result = "Head of Section"
+        .FormFields("DgSignName03").Result = ""
+        .FormFields("DgSignTitle02").Result = ""
+        .FormFields("DgSignId03").Result = ""
+        .FormFields("DgSignCvsNo02").Result = ""
+        .FormFields("DgSignName02").Result = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        .FormFields("DgSignId01").Result = Sheet2.Cells(Me.author_name.ListIndex + 2, 4)
+        .FormFields("DgSignId02").Result = Sheet2.Cells(Me.author_name.ListIndex + 2, 5)
+        .FormFields("DgSignCvsNo").Result = Sheet2.Cells(Me.author_name.ListIndex + 2, 6)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & contract_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & contract_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & contract_number.Text & ".docx")
+        End With
+End Sub
+Private Sub issue_proposal_wps()
+        'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+        'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\WPS and WQTC\wps_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+        Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+    End With
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_wqtc()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\WPS and WQTC\wqtc_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+    End With
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_wps_wqtc()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\WPS and WQTC\wps_wqtc_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_product_certification()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\PRODUCT CERTIFICATION\product_certification_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_inspection()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\TEST AND INSPECTION - VISIT OR SURVEY\inspection_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_test()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\TEST AND INSPECTION - VISIT OR SURVEY\test_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_inspection_test()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\TEST AND INSPECTION - VISIT OR SURVEY\inspection_test_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_technical_verification_statement()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\VERIFICATION STATEMENT\technical_verification_statement.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 11
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_commercial_verification_statement()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\VERIFICATION STATEMENT\commercial_verification_statement.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 11
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Private Sub issue_proposal_technical_commercial_verification_statement()
+    'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+    'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\VMC\VERIFICATION STATEMENT\technical_commercial_verification_statement.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "Nota: #ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Sub issue_proposal_goods()
+        'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+        'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\LCC\GOODS\goods_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                SendKeys ("{BACKSPACE}")
+                SendKeys ("{BACKSPACE}")
+                SendKeys ("{BACKSPACE}")
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        'Logistic and Schedule Information
+        .FormFields("LogNScheIndo01").Result = LCC_logistic_and_schedule.documentation_verification_days
+        .FormFields("LogNScheIndo02").Result = LCC_logistic_and_schedule.in_loco_evaluation_days
+        .FormFields("LogNScheIndo03").Result = LCC_logistic_and_schedule.local_content_booklet_fill_days
+        .FormFields("LogNScheIndo04").Result = LCC_logistic_and_schedule.local_content_certificate_emission_days
+        'Reference List Information
+        .FormFields("conj_nomepdc").Result = Me.contact_person
+        .FormFields("conj_datasolic1").Result = Me.request_date
+        .FormFields("conj_razaosocial4").Result = Me.customer_name
+        
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Sub issue_proposal_materials()
+        'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+        'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\LCC\MATERIALS\materials_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                SendKeys ("{BACKSPACE}")
+                SendKeys ("{BACKSPACE}")
+                SendKeys ("{BACKSPACE}")
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        'Logistic and Schedule Information
+        .FormFields("LogNScheIndo01").Result = LCC_logistic_and_schedule.documentation_verification_days
+        .FormFields("LogNScheIndo04").Result = LCC_logistic_and_schedule.local_content_certificate_emission_days
+        'Reference List Information
+        .FormFields("conj_nomepdc").Result = Me.contact_person
+        .FormFields("conj_datasolic1").Result = Me.request_date
+        .FormFields("conj_razaosocial4").Result = Me.customer_name
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Sub issue_proposal_set()
+        'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+        'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\LCC\SET\set_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                SendKeys ("{BACKSPACE}")
+                SendKeys ("{BACKSPACE}")
+                SendKeys ("{BACKSPACE}")
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        'Logistic and Schedule Information
+        .FormFields("LogNScheIndo01").Result = LCC_logistic_and_schedule.documentation_verification_days
+        .FormFields("LogNScheIndo02").Result = LCC_logistic_and_schedule.in_loco_evaluation_days
+        .FormFields("LogNScheIndo03").Result = LCC_logistic_and_schedule.local_content_booklet_fill_days
+        .FormFields("LogNScheIndo04").Result = LCC_logistic_and_schedule.local_content_certificate_emission_days
+        'Reference List Information
+        .FormFields("conj_nomepdc").Result = Me.contact_person
+        .FormFields("conj_datasolic1").Result = Me.request_date
+        .FormFields("conj_razaosocial4").Result = Me.customer_name
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+        End With
+    Call save_proposal_data_Click
+End Sub
+Sub issue_proposal_mdo_service()
+        'Declarations
+    Dim wApp As Object
+    Dim wDoc As Object
+        'Opening the scope marked down at the User Form (PROPOSAL_554) option
+    proposaltype = "" & Application.ActiveWorkbook.Path & "\Standard Scopes\LCC\MDO SERVICE\mdo_service_standard_scope.docx"
+    Set wApp = CreateObject("Word.Application")
+        wApp.Visible = True
+        wApp.Activate
+    Set wDoc = wApp.Documents.Open(proposaltype)
+    With wDoc
+        'The modules bellow are going to find #NAME in the openned stantard then replace it by the UCase value, which is typed into the User Form (PROPOSAL_554).
+            'ATTENTION: The lines order should be the same as they appear in the scope.
+        'Module 1
+        .Application.Selection.Find.Text = "#PROPOSALTITLE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = proposal_title
+        'Module 2
+        .Application.Selection.Find.Text = "#CUSTOMERNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_name
+        'Module 3
+        .Application.Selection.Find.Text = "#CUSTOMERREFERENCE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_reference
+        'Module 4
+        .Application.Selection.Find.Text = "#DOCUMENTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(document_number)
+        'Module 5
+        .Application.Selection.Find.Text = "#ISSUEDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = issue_date
+        'Module 6
+        .Application.Selection.Find.Text = "#REVDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = rev_date
+        'Module 7
+        .Application.Selection.Find.Text = "#CUSTOMERADDRESS"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = customer_commercial_address
+        'Module 8
+        .Application.Selection.Find.Text = "#CONTACTPERSON"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = "" & contact_person & " / " & direct_phone & " / " & customer_email & ""
+        'Module 9
+        .Application.Selection.Find.Text = "#CONTRACTNUMBER"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = UCase(contract_number)
+        'Module 10
+        .Application.Selection.Find.Text = "#AUTHORNAME"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = Sheet2.Cells(Me.author_name.ListIndex + 2, 2)
+        'Module 11
+        .Application.Selection.Find.Text = "#AUTHORPOSITION"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = author_position
+        'Module 12
+        .Application.Selection.Find.Text = "#REQUESTDATE"
+        .Application.Selection.Find.Execute
+        .Application.Selection.Range = request_date
+        'Module 13 ISS
+            If iss_applicability.Value = True Then
+                'Module 15.1
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = ""
+                SendKeys ("{BACKSPACE}")
+                SendKeys ("{BACKSPACE}")
+                SendKeys ("{BACKSPACE}")
+                'Module 15.2
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, inclusive o ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            Else
+                'Module 15.3
+                .Application.Selection.Find.Text = "#ISSNOTE"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Aos valores descritos nos itens acima, deverão ser acrescidos " & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 7) & "% (" & Sheet4.Cells(Me.billing_dnvgl.ListIndex + 2, 8) & " por cento) concernentes ao ISS."
+                'Module 15.4
+                .Application.Selection.Find.Text = "#ISSTEXT"
+                .Application.Selection.Find.Execute
+                .Application.Selection.Range = "Os valores desta proposta incluem todos os impostos, taxas, emolumentos e contribuições fiscais e para-fiscais, federais, estaduais e municipais, exceto ISS, devidos em decorrência deste contrato. No caso de municípios, outros que não o Rio de Janeiro, que exerçam a opção de tributar também o ISS (além do município do Rio de Janeiro), esta bitributação deverá ser arcada pelo cliente."
+            End If
+        'DNV GL Details Information
+        .FormFields("DgDNVDtlInfo01").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 1)
+        .FormFields("DgDNVDtlInfo02").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 4)
+        .FormFields("DgDNVDtlInfo03").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 2)
+        .FormFields("DgDNVDtlInfo04").Result = Sheet2.ListObjects("mother_dnvgl_data_table").Range.Cells(2, 3)
+        'Logistic and Schedule Information
+        .FormFields("LogNScheIndo01").Result = LCC_logistic_and_schedule.documentation_verification_days
+        .FormFields("LogNScheIndo02").Result = LCC_logistic_and_schedule.in_loco_evaluation_days
+        .FormFields("LogNScheIndo03").Result = LCC_logistic_and_schedule.local_content_booklet_fill_days
+        .FormFields("LogNScheIndo04").Result = LCC_logistic_and_schedule.local_content_certificate_emission_days
+        'Reference List Information
+        .FormFields("conj_nomepdc").Result = Me.contact_person
+        .FormFields("conj_datasolic1").Result = Me.request_date
+        .FormFields("conj_razaosocial4").Result = Me.customer_name
+        If Dir("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx") <> "" Then
+            Kill "" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx"
+        End If
+        .SaveAs ("" & Application.ActiveWorkbook.Path & "\Issued Proposal and SFA\" & customer_name.Text & " " & document_number.Text & ".docx")
+    End With
+    Call save_proposal_data_Click
+End Sub
